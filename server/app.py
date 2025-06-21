@@ -52,14 +52,16 @@ def powerById(id):
     elif request.method == 'PATCH':
         try:
             data = request.get_json()
-            for attr in data:
-                setattr(power, attr, data[attr])
 
-            db.session.add(power)
+            new_description = data.get("description")
+            if not new_description or len(new_description) < 20:
+                return make_response({"errors": ["validation errors"]}, 400)
+
+            power.description = new_description
             db.session.commit()
             return make_response(power.to_dict(), 200)
 
-        except ValueError as e:
+        except Exception as e:
             return make_response({"errors": [str(e)]}, 400)
         
 #f. POST /hero_powers
